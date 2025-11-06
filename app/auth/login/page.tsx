@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { getPortalPath } from "@/lib/utils/portal"
-import { Info } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -27,31 +26,61 @@ export default function LoginPage() {
     setIsLoading(true)
     setError(null)
 
+    console.log("[v0] Login attempt started with email:", email)
+
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      console.log("[v0] Calling signInWithPassword with email:", email)
+      const { error: signInError, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
-      if (signInError) throw signInError
 
+      console.log("[v0] SignIn response - error:", signInError, "data:", data)
+
+      if (signInError) {
+        console.log("[v0] SignIn error details:", {
+          message: signInError.message,
+          status: signInError.status,
+          code: (signInError as any).code,
+        })
+        throw signInError
+      }
+
+      console.log("[v0] SignIn successful, fetching user...")
       const {
         data: { user },
       } = await supabase.auth.getUser()
-      if (!user) throw new Error("User not found")
 
+      console.log("[v0] User data retrieved:", { id: user?.id, email: user?.email })
+
+      if (!user) {
+        console.log("[v0] Error: User not found after successful signIn")
+        throw new Error("User not found")
+      }
+
+      console.log("[v0] Fetching profile for user:", user.id)
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", user.id)
         .single()
 
-      if (profileError) throw profileError
+      console.log("[v0] Profile response:", { profile, error: profileError })
 
+      if (profileError) {
+        console.log("[v0] Profile fetch error:", profileError)
+        throw profileError
+      }
+
+      console.log("[v0] Login successful, user role:", profile?.role)
       const portalPath = getPortalPath(profile?.role || "donor")
+      console.log("[v0] Redirecting to portal:", portalPath)
       router.push(portalPath)
       router.refresh()
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const errorMessage = error instanceof Error ? error.message : "An error occurred"
+      console.log("[v0] Login error caught:", errorMessage, error)
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -70,7 +99,6 @@ export default function LoginPage() {
           </div>
 
           <Alert>
-            <Info className="h-4 w-4" />
             <AlertDescription className="text-xs">
               <p className="font-semibold mb-2">Setup Test Accounts:</p>
               <div className="space-y-1 mb-2">
