@@ -21,7 +21,9 @@ INSERT INTO public.donors (user_id, donor_type)
 SELECT id, 'individual'::public.donor_type
 FROM public.profiles 
 WHERE email = 'donor@starehe.ac.ke'
-ON CONFLICT DO NOTHING;
+AND NOT EXISTS (
+  SELECT 1 FROM public.donors WHERE user_id = (SELECT id FROM public.profiles WHERE email = 'donor@starehe.ac.ke')
+);
 
 -- Update FINANCE OFFICER user role
 UPDATE public.profiles 

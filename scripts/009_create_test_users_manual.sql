@@ -21,7 +21,9 @@ WHERE email = 'donor@starehe.ac.ke';
 INSERT INTO donors (user_id, donor_type, organization_name)
 SELECT id, 'individual', NULL
 FROM profiles WHERE email = 'donor@starehe.ac.ke'
-ON CONFLICT (user_id) DO NOTHING;
+WHERE NOT EXISTS (
+  SELECT 1 FROM donors WHERE user_id = (SELECT id FROM profiles WHERE email = 'donor@starehe.ac.ke')
+);
 
 -- Update FINANCE OFFICER user role
 UPDATE profiles 
