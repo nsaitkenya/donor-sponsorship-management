@@ -1,7 +1,7 @@
--- Confirm all test users so they can login without email verification
+-- Use only email_confirmed_at which is the correct column to update
+-- confirmed_at is a protected system column in Supabase and cannot be manually updated
 UPDATE auth.users 
-SET email_confirmed_at = NOW(),
-    confirmed_at = NOW()
+SET email_confirmed_at = NOW()
 WHERE email IN (
   'donor@starehe.ac.ke',
   'finance@starehe.ac.ke',

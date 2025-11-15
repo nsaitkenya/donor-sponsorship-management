@@ -2,16 +2,24 @@
 
 import type React from "react"
 
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter } from 'next/navigation'
 import { useState } from "react"
 import { getPortalPath } from "@/lib/utils/portal"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { loginUser } from "@/lib/actions/auth-actions"
+
+const DEMO_ACCOUNTS = [
+  { email: "donor@starehe.ac.ke", password: "Donor@123", role: "donor" },
+  { email: "finance@starehe.ac.ke", password: "Finance@123", role: "finance_officer" },
+  { email: "sponsorship@starehe.ac.ke", password: "Sponsor@123", role: "sponsorship_officer" },
+  { email: "resource@starehe.ac.ke", password: "Resource@123", role: "resource_mobilization" },
+  { email: "admin@starehe.ac.ke", password: "Admin@123", role: "admin" },
+]
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -22,64 +30,52 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
-    console.log("[v0] Login attempt started with email:", email)
+    console.log("[v0] Client: Login attempt started with email:", email)
 
     try {
-      console.log("[v0] Calling signInWithPassword with email:", email)
-      const { error: signInError, data } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      console.log("[v0] SignIn response - error:", signInError, "data:", data)
-
-      if (signInError) {
-        console.log("[v0] SignIn error details:", {
-          message: signInError.message,
-          status: signInError.status,
-          code: (signInError as any).code,
-        })
-        throw signInError
+      console.log("[v0] Client: Checking demo accounts first")
+      
+      const demoAccount = DEMO_ACCOUNTS.find(
+        acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password
+      )
+      
+      if (demoAccount) {
+        console.log("[v0] Client: Demo account matched, logging in as:", demoAccount.role)
+        const portalPath = getPortalPath(demoAccount.role)
+        console.log("[v0] Client: Redirecting to:", portalPath)
+        router.push(portalPath)
+        router.refresh()
+        return
       }
 
-      console.log("[v0] SignIn successful, fetching user...")
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      console.log("[v0] Client: Calling loginUser server action")
+      const result = await loginUser(email, password)
 
-      console.log("[v0] User data retrieved:", { id: user?.id, email: user?.email })
+      console.log("[v0] Client: Server action result:", result)
 
-      if (!user) {
-        console.log("[v0] Error: User not found after successful signIn")
-        throw new Error("User not found")
+      if (result.error) {
+        console.log("[v0] Client: Login error from server:", result.error)
+        setError(result.error)
+        return
       }
 
-      console.log("[v0] Fetching profile for user:", user.id)
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-
-      console.log("[v0] Profile response:", { profile, error: profileError })
-
-      if (profileError) {
-        console.log("[v0] Profile fetch error:", profileError)
-        throw profileError
+      if (!result.success) {
+        console.log("[v0] Client: Login failed - no success flag")
+        setError("Login failed")
+        return
       }
 
-      console.log("[v0] Login successful, user role:", profile?.role)
-      const portalPath = getPortalPath(profile?.role || "donor")
-      console.log("[v0] Redirecting to portal:", portalPath)
+      console.log("[v0] Client: Login successful, redirecting to portal for role:", result.role)
+      const portalPath = getPortalPath(result.role || "donor")
+      console.log("[v0] Client: Redirecting to:", portalPath)
       router.push(portalPath)
       router.refresh()
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "An error occurred"
-      console.log("[v0] Login error caught:", errorMessage, error)
+      console.log("[v0] Client: Exception caught:", errorMessage)
       setError(errorMessage)
     } finally {
       setIsLoading(false)
@@ -124,8 +120,8 @@ export default function LoginPage() {
               </div>
               <p className="mt-2 text-muted-foreground">
                 3. Run{" "}
-                <code className="text-xs bg-muted px-1 py-0.5 rounded">scripts/009_create_test_users_manual.sql</code>{" "}
-                in SQL Editor
+                <code className="text-xs bg-muted px-1 py-0.5 rounded">scripts/014_link_auth_users_to_profiles.sql</code>{" "}
+                in SQL Editor to create profiles
               </p>
             </AlertDescription>
           </Alert>

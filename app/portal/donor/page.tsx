@@ -1,43 +1,94 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
-import { PortalLayout } from "@/components/portal-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
-import { Heart, TrendingUp, Users, Calendar, ArrowRight } from "lucide-react"
+'use client'
 
-export default async function DonorDashboardPage() {
-  const supabase = await createClient()
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { PortalLayout } from '@/components/portal-layout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import { Heart, TrendingUp, Users, Calendar, ArrowRight } from 'lucide-react'
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-  if (error || !user) {
-    redirect("/auth/login")
+export default function DonorDashboardPage() {
+  const router = useRouter()
+  const supabase = createClient()
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const [donor, setDonor] = useState<any>(null)
+  const [donations, setDonations] = useState<any[]>([])
+  const [sponsorships, setSponsorsips] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser()
+
+        if (!authUser) {
+          console.log('[v0] No authenticated user found, redirecting to login')
+          router.push('/auth/login')
+          return
+        }
+
+        setUser(authUser)
+        console.log('[v0] User authenticated:', authUser.email)
+
+        // Fetch profile
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', authUser.id).single()
+
+        setProfile(profileData)
+
+        // Fetch donor data
+        const { data: donorData } = await supabase.from('donors').select('*').eq('user_id', authUser.id).single()
+
+        setDonor(donorData)
+
+        if (donorData?.id) {
+          // Fetch donations
+          const { data: donationsData } = await supabase
+            .from('donations')
+            .select('*')
+            .eq('donor_id', donorData.id)
+            .order('created_at', { ascending: false })
+            .limit(5)
+
+          setDonations(donationsData || [])
+
+          // Fetch sponsorships
+          const { data: sponsorshipsData } = await supabase
+            .from('sponsorships')
+            .select('*, students(*)')
+            .eq('donor_id', donorData.id)
+            .eq('status', 'active')
+
+          setSponsorsips(sponsorshipsData || [])
+        }
+      } catch (error) {
+        console.error('[v0] Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [supabase, router])
+
+  if (loading) {
+    return (
+      <PortalLayout userEmail={user?.email} userName={profile?.full_name} userRole="donor">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </PortalLayout>
+    )
   }
 
-  // Fetch profile
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
-
-  // Fetch donor data
-  const { data: donor } = await supabase.from("donors").select("*").eq("user_id", user.id).single()
-
-  // Fetch donations
-  const { data: donations } = await supabase
-    .from("donations")
-    .select("*")
-    .eq("donor_id", donor?.id)
-    .order("created_at", { ascending: false })
-    .limit(5)
-
-  // Fetch sponsorships
-  const { data: sponsorships } = await supabase
-    .from("sponsorships")
-    .select("*, students(*)")
-    .eq("donor_id", donor?.id)
-    .eq("status", "active")
+  if (!user) {
+    return null
+  }
 
   const totalDonated = donor?.total_donated || 0
   const donationCount = donor?.donation_count || 0
@@ -48,7 +99,7 @@ export default async function DonorDashboardPage() {
       <div className="space-y-8">
         {/* Welcome Section */}
         <div>
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {profile?.full_name || "Donor"}!</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome back, {profile?.full_name || 'Donor'}!</h1>
           <p className="text-muted-foreground">Here's an overview of your impact at Starehe Boys Centre</p>
         </div>
 
@@ -91,7 +142,7 @@ export default async function DonorDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {donor?.created_at ? new Date(donor.created_at).getFullYear() : "2024"}
+                {donor?.created_at ? new Date(donor.created_at).getFullYear() : '2024'}
               </div>
               <p className="text-xs text-muted-foreground">Year joined</p>
             </CardContent>
@@ -148,11 +199,11 @@ export default async function DonorDashboardPage() {
                       </div>
                       <Badge
                         variant={
-                          donation.payment_status === "completed"
-                            ? "default"
-                            : donation.payment_status === "pending"
-                              ? "secondary"
-                              : "destructive"
+                          donation.payment_status === 'completed'
+                            ? 'default'
+                            : donation.payment_status === 'pending'
+                              ? 'secondary'
+                              : 'destructive'
                         }
                       >
                         {donation.payment_status}

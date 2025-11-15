@@ -47,11 +47,13 @@ export default function SetupUsersPage() {
 
       console.log(`[v0] User created successfully: ${authData.user.id}`)
 
-      // Update profile with role
-      const { error: profileError } = await supabase.from("profiles").update({ role }).eq("id", authData.user.id)
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert([{ id: authData.user.id, email, full_name: email.split("@")[0], role }])
+        .select()
 
       if (profileError) {
-        console.log(`[v0] Profile update error for ${email}:`, profileError)
+        console.log(`[v0] Profile insert error for ${email}:`, profileError)
         throw profileError
       }
 
