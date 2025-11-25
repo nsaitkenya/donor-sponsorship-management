@@ -12,13 +12,14 @@ import { useState } from "react"
 import { getPortalPath } from "@/lib/utils/portal"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { loginUser } from "@/lib/actions/auth-actions"
+import { MOCK_USERS, setMockUser, isMockAuthEnabled } from "@/lib/mock-auth"
 
 const DEMO_ACCOUNTS = [
-  { email: "donor@starehe.ac.ke", password: "Donor@123", role: "donor" },
-  { email: "finance@starehe.ac.ke", password: "Finance@123", role: "finance_officer" },
-  { email: "sponsorship@starehe.ac.ke", password: "Sponsor@123", role: "sponsorship_officer" },
-  { email: "resource@starehe.ac.ke", password: "Resource@123", role: "resource_mobilization" },
-  { email: "admin@starehe.ac.ke", password: "Admin@123", role: "admin" },
+  { email: "donor@starehe.ac.ke", password: "demo", role: "donor" },
+  { email: "finance@starehe.ac.ke", password: "demo", role: "finance_officer" },
+  { email: "sponsorship@starehe.ac.ke", password: "demo", role: "sponsorship_officer" },
+  { email: "resource@starehe.ac.ke", password: "demo", role: "resource_mobilization" },
+  { email: "admin@starehe.ac.ke", password: "demo", role: "admin" },
 ]
 
 export default function LoginPage() {
@@ -36,21 +37,29 @@ export default function LoginPage() {
     console.log("[v0] Client: Login attempt started with email:", email)
 
     try {
-      console.log("[v0] Client: Checking demo accounts first")
-      
-      const demoAccount = DEMO_ACCOUNTS.find(
-        acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password
-      )
-      
-      if (demoAccount) {
-        console.log("[v0] Client: Demo account matched, logging in as:", demoAccount.role)
-        const portalPath = getPortalPath(demoAccount.role)
-        console.log("[v0] Client: Redirecting to:", portalPath)
-        router.push(portalPath)
-        router.refresh()
-        return
+      // Check if mock auth is enabled
+      if (isMockAuthEnabled()) {
+        console.log("[v0] Client: Mock auth enabled, checking demo accounts")
+
+        const demoAccount = DEMO_ACCOUNTS.find(
+          acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password
+        )
+
+        if (demoAccount) {
+          console.log("[v0] Client: Demo account matched, logging in as:", demoAccount.role)
+          setMockUser(demoAccount.email)
+          const portalPath = getPortalPath(demoAccount.role)
+          console.log("[v0] Client: Redirecting to:", portalPath)
+          router.push(portalPath)
+          router.refresh()
+          return
+        } else {
+          setError("Invalid credentials. Use any email above with password: demo")
+          return
+        }
       }
 
+      // Real Supabase auth (when mock auth is disabled)
       console.log("[v0] Client: Calling loginUser server action")
       const result = await loginUser(email, password)
 
@@ -94,34 +103,31 @@ export default function LoginPage() {
             <p className="text-sm text-muted-foreground">Sign in to access your portal</p>
           </div>
 
-          <Alert>
+          <Alert className="bg-green-50 border-green-200">
             <AlertDescription className="text-xs">
-              <p className="font-semibold mb-2">Setup Test Accounts:</p>
+              <p className="font-semibold mb-2 text-green-900">✅ Mock Auth Enabled - Demo Mode Active</p>
               <div className="space-y-1 mb-2">
-                <p className="text-muted-foreground">1. Go to Supabase Dashboard → Authentication → Users</p>
-                <p className="text-muted-foreground">2. Create users with these emails and passwords:</p>
+                <p className="text-green-800">Login with any of these accounts using password: <strong>demo</strong></p>
               </div>
               <div className="space-y-1 pl-2">
-                <p>
-                  • <strong>donor@starehe.ac.ke</strong> / Donor@123
+                <p className="text-green-900">
+                  • <strong>donor@starehe.ac.ke</strong> → Donor Portal
                 </p>
-                <p>
-                  • <strong>finance@starehe.ac.ke</strong> / Finance@123
+                <p className="text-green-900">
+                  • <strong>finance@starehe.ac.ke</strong> → Finance Portal
                 </p>
-                <p>
-                  • <strong>sponsorship@starehe.ac.ke</strong> / Sponsor@123
+                <p className="text-green-900">
+                  • <strong>sponsorship@starehe.ac.ke</strong> → Sponsorship Portal
                 </p>
-                <p>
-                  • <strong>resource@starehe.ac.ke</strong> / Resource@123
+                <p className="text-green-900">
+                  • <strong>resource@starehe.ac.ke</strong> → Resource Mobilization
                 </p>
-                <p>
-                  • <strong>admin@starehe.ac.ke</strong> / Admin@123
+                <p className="text-green-900">
+                  • <strong>admin@starehe.ac.ke</strong> → Admin Portal
                 </p>
               </div>
-              <p className="mt-2 text-muted-foreground">
-                3. Run{" "}
-                <code className="text-xs bg-muted px-1 py-0.5 rounded">scripts/014_link_auth_users_to_profiles.sql</code>{" "}
-                in SQL Editor to create profiles
+              <p className="mt-2 text-green-700 text-[10px]">
+                To disable mock auth and use real Supabase, set <code className="bg-green-100 px-1 rounded">isMockAuthEnabled()</code> to false in <code className="bg-green-100 px-1 rounded">lib/mock-auth.ts</code>
               </p>
             </AlertDescription>
           </Alert>

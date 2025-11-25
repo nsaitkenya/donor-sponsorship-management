@@ -18,7 +18,11 @@ export function PortalLayout({ children, userEmail, userName, userRole = "donor"
         <aside className="hidden lg:block w-64 border-r bg-muted/40">
           <PortalNav role={userRole} />
         </aside>
-        <main className="flex-1 p-6 md:p-8 lg:p-10 bg-muted/30">{children}</main>
+        <main className="flex-1 bg-muted/30">
+          <div className="container mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   )

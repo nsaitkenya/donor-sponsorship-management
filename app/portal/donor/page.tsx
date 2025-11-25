@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Heart, TrendingUp, Users, Calendar, ArrowRight } from 'lucide-react'
+import { getMockUser, isMockAuthEnabled } from '@/lib/mock-auth'
 
 export default function DonorDashboardPage() {
   const router = useRouter()
@@ -23,6 +24,27 @@ export default function DonorDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Check for mock auth first
+        if (isMockAuthEnabled()) {
+          const mockUser = getMockUser()
+
+          if (!mockUser) {
+            console.log('[v0] Mock auth enabled but no mock user found, redirecting to login')
+            router.push('/auth/login')
+            return
+          }
+
+          console.log('[v0] Using mock user:', mockUser.email)
+          setUser({ id: mockUser.id, email: mockUser.email })
+          setProfile(mockUser.profile)
+          setDonor(mockUser.donor)
+          setDonations([]) // Empty for now, can add mock data later
+          setSponsorsips([])
+          setLoading(false)
+          return
+        }
+
+        // Real Supabase auth
         const {
           data: { user: authUser },
         } = await supabase.auth.getUser()

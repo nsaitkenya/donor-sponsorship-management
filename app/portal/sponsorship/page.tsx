@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Users, UserCheck, GraduationCap, FileText, ArrowRight } from "lucide-react"
+import { getMockUser, isMockAuthEnabled } from "@/lib/mock-auth"
 
 export default function SponsorshipPortalPage() {
   const router = useRouter()
@@ -22,6 +23,28 @@ export default function SponsorshipPortalPage() {
 
   useEffect(() => {
     async function loadData() {
+      // Check for mock auth first
+      if (isMockAuthEnabled()) {
+        const mockUser = getMockUser()
+
+        if (!mockUser || (mockUser.role !== 'sponsorship_officer' && mockUser.role !== 'admin')) {
+          router.push('/auth/login')
+          return
+        }
+
+        // Set mock data for demo
+        setStats({
+          totalStudents: 150,
+          activeStudents: 142,
+          activeMatches: 98,
+          pendingMatches: 12,
+          reportsThisMonth: 24,
+        })
+        setLoading(false)
+        return
+      }
+
+      // Real Supabase data
       const supabase = createClient()
 
       const {
