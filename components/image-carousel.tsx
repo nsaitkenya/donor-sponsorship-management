@@ -18,7 +18,6 @@ const CAROUSEL_IMAGES = [
 export function ImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     if (!autoPlay) return
@@ -38,11 +37,6 @@ export function ImageCarousel() {
     setAutoPlay(false)
   }
 
-  const handleImageError = (index: number) => {
-    console.log(`[v0] Image failed to load: ${CAROUSEL_IMAGES[index]}`)
-    setImageErrors((prev) => new Set(prev).add(index))
-  }
-
   return (
     <div className="relative w-full h-full overflow-hidden rounded-2xl group">
       <div className="relative h-96 md:h-full w-full">
@@ -54,13 +48,11 @@ export function ImageCarousel() {
             }`}
           >
             <Image
-              src={imageErrors.has(index) ? "/placeholder.svg?height=600&width=800" : image}
+              src={image || "/placeholder.svg"}
               alt={`Starehe Boys Centre students ${index + 1}`}
               fill
               className="object-cover"
-              onError={() => handleImageError(index)}
               priority={index === 0}
-              unoptimized
             />
           </div>
         ))}

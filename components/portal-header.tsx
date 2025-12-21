@@ -63,8 +63,12 @@ export function PortalHeader({ userEmail, userName, userRole = "donor" }: Portal
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               <div className="flex h-16 items-center gap-2 border-b px-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-                  SBC
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-border">
+                  <img
+                    src="https://stareheboyscentre.org/wp-content/uploads/2025/05/Starehe-Boys-Centre-Logo.png"
+                    alt="Starehe Logo"
+                    className="h-8 w-8 object-contain"
+                  />
                 </div>
                 <span className="font-semibold">{portalTitle}</span>
               </div>
@@ -76,8 +80,12 @@ export function PortalHeader({ userEmail, userName, userRole = "donor" }: Portal
             href={`/portal/${userRole === "finance_officer" ? "finance" : userRole === "sponsorship_officer" ? "sponsorship" : userRole === "resource_mobilization" ? "resource-mobilization" : userRole === "admin" ? "admin" : "donor"}`}
             className="flex items-center gap-2"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-              SBC
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-border">
+              <img
+                src="https://stareheboyscentre.org/wp-content/uploads/2025/05/Starehe-Boys-Centre-Logo.png"
+                alt="Starehe Boys Centre Logo"
+                className="h-8 w-8 object-contain"
+              />
             </div>
             <span className="font-semibold text-lg hidden sm:inline-block">{portalTitle}</span>
           </Link>
