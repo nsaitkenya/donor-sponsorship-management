@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Target, TrendingUp, Users, Megaphone, ArrowRight } from "lucide-react"
-import { getMockUser, isMockAuthEnabled } from "@/lib/mock-auth"
 
 export default function ResourceMobilizationPortalPage() {
   const router = useRouter()
@@ -23,28 +22,6 @@ export default function ResourceMobilizationPortalPage() {
 
   useEffect(() => {
     async function loadData() {
-      // Check for mock auth first
-      if (isMockAuthEnabled()) {
-        const mockUser = getMockUser()
-
-        if (!mockUser || (mockUser.role !== 'resource_mobilization' && mockUser.role !== 'admin')) {
-          router.push('/auth/login')
-          return
-        }
-
-        // Set mock data for demo
-        setStats({
-          activeCampaigns: 5,
-          totalCampaigns: 12,
-          totalRaised: 450000,
-          totalGoal: 800000,
-          totalDonors: 89,
-        })
-        setLoading(false)
-        return
-      }
-
-      // Real Supabase data
       const supabase = createClient()
 
       const {

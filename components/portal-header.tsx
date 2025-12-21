@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation"
 import { User, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { PortalNav } from "./portal-nav"
-import { clearMockUser, isMockAuthEnabled } from "@/lib/mock-auth"
 
 interface PortalHeaderProps {
   userEmail?: string
@@ -36,15 +35,6 @@ export function PortalHeader({ userEmail, userName, userRole = "donor" }: Portal
   const router = useRouter()
 
   const handleSignOut = async () => {
-    // Clear mock auth if enabled
-    if (isMockAuthEnabled()) {
-      clearMockUser()
-      router.push("/auth/login")
-      router.refresh()
-      return
-    }
-
-    // Real Supabase logout
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push("/")

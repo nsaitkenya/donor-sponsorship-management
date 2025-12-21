@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -17,6 +18,7 @@ const CAROUSEL_IMAGES = [
 export function ImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     if (!autoPlay) return
@@ -36,18 +38,31 @@ export function ImageCarousel() {
     setAutoPlay(false)
   }
 
+  const handleImageError = (index: number) => {
+    console.log(`[v0] Image failed to load: ${CAROUSEL_IMAGES[index]}`)
+    setImageErrors((prev) => new Set(prev).add(index))
+  }
+
   return (
     <div className="relative w-full h-full overflow-hidden rounded-2xl group">
       <div className="relative h-96 md:h-full w-full">
         {CAROUSEL_IMAGES.map((image, index) => (
-          <img
+          <div
             key={index}
-            src={image || "/placeholder.svg"}
-            alt={`Starehe students ${index + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            className={`absolute inset-0 transition-opacity duration-1000 ${
               index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
-          />
+          >
+            <Image
+              src={imageErrors.has(index) ? "/placeholder.svg?height=600&width=800" : image}
+              alt={`Starehe Boys Centre students ${index + 1}`}
+              fill
+              className="object-cover"
+              onError={() => handleImageError(index)}
+              priority={index === 0}
+              unoptimized
+            />
+          </div>
         ))}
         <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
       </div>

@@ -6,35 +6,15 @@ import { createClient } from "@/lib/supabase/client"
 import { PortalLayout } from "@/components/portal-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DollarSign, TrendingUp, Clock, CheckCircle } from "lucide-react"
-import { getMockUser, isMockAuthEnabled } from "@/lib/mock-auth"
 
 export default function FinancePortalPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ totalRevenue: 0, pendingAmount: 0, completedCount: 0, pendingCount: 0 })
   const [recentTransactions, setRecentTransactions] = useState<any[]>([])
-  const [userProfile, setUserProfile] = useState<any>(null)
 
   useEffect(() => {
     async function loadData() {
-      // Check for mock auth first
-      if (isMockAuthEnabled()) {
-        const mockUser = getMockUser()
-
-        if (!mockUser || (mockUser.role !== 'finance_officer' && mockUser.role !== 'admin')) {
-          router.push('/auth/login')
-          return
-        }
-
-        setUserProfile(mockUser.profile)
-        // Set mock data for demo
-        setStats({ totalRevenue: 150000, pendingAmount: 25000, completedCount: 45, pendingCount: 8 })
-        setRecentTransactions([])
-        setLoading(false)
-        return
-      }
-
-      // Real Supabase data
       const supabase = createClient()
 
       const {
@@ -51,8 +31,6 @@ export default function FinancePortalPage() {
         router.push("/portal/donor")
         return
       }
-
-      setUserProfile(profile)
 
       const { data: allDonations } = await supabase.from("donations").select("*")
 
@@ -156,12 +134,13 @@ export default function FinancePortalPage() {
                         {transaction.currency} {transaction.amount.toLocaleString()}
                       </p>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${transaction.payment_status === "completed"
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          transaction.payment_status === "completed"
                             ? "bg-primary/10 text-primary"
                             : transaction.payment_status === "pending"
                               ? "bg-secondary text-secondary-foreground"
                               : "bg-destructive/10 text-destructive"
-                          }`}
+                        }`}
                       >
                         {transaction.payment_status}
                       </span>
