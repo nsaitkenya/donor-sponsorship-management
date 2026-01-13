@@ -1,16 +1,34 @@
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { ImageCarousel } from "@/components/image-carousel"
+import { AnnouncementCarousel } from "@/components/announcement-carousel"
+import { FeaturedCampaign } from "@/components/featured-campaign"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { ArrowRight, Heart, Users, GraduationCap, TrendingUp, Target, Award, BookOpen } from "lucide-react"
+import { createServerClient } from "@/lib/supabase/server"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createServerClient()
+
+  const { data: campaigns } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(5)
+
+  const featuredCampaign = campaigns?.[0]
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
+
+      {campaigns && campaigns.length > 0 && <AnnouncementCarousel campaigns={campaigns} />}
+
+      {featuredCampaign && <FeaturedCampaign campaign={featuredCampaign} />}
 
       <main className="flex-1">
         {/* Hero Section */}

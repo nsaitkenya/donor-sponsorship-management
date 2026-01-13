@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans antialiased`}>
+    <html lang="en" className="w-full">
+      <body className={`font-sans antialiased w-full`}>
         {children}
       </body>
     </html>
