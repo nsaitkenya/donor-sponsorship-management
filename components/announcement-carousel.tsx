@@ -40,34 +40,34 @@ export function AnnouncementCarousel({ campaigns }: AnnouncementCarouselProps) {
             : 0
 
     return (
-        <div className="relative overflow-hidden bg-primary text-primary-foreground py-2.5 border-b border-primary/20 w-full">
+        <div className="relative overflow-hidden bg-primary text-primary-foreground py-2 sm:py-2.5 border-b border-primary/20 w-full">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
             <div className="relative w-full">
                 <div className="ticker-wrapper">
-                    <div className="ticker-content">
-                        <Sparkles className="h-4 w-4 shrink-0 animate-pulse" />
-                        <span className="font-semibold">⭐ Featured Campaign:</span>
+                    <div className="ticker-content text-xs sm:text-sm">
+                        <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 shrink-0 animate-pulse" />
+                        <span className="font-semibold">⭐ Featured:</span>
                         <span className="font-bold">{currentCampaign.title}</span>
-                        <span className="opacity-90">•</span>
-                        <span>{currentCampaign.brief_details || currentCampaign.description}</span>
+                        <span className="opacity-90 hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">{currentCampaign.brief_details || currentCampaign.description}</span>
                         <span className="opacity-90">•</span>
                         <span className="font-semibold">
-                            ${currentCampaign.current_amount.toLocaleString()} raised of ${currentCampaign.goal_amount.toLocaleString()} ({Math.round(progress)}%)
+                            ${currentCampaign.current_amount.toLocaleString()} <span className="hidden sm:inline">raised of ${currentCampaign.goal_amount.toLocaleString()}</span> ({Math.round(progress)}%)
                         </span>
-                        <Sparkles className="h-4 w-4 shrink-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                        <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 shrink-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
 
                         {/* Duplicate for seamless loop */}
-                        <Sparkles className="h-4 w-4 shrink-0 animate-pulse ml-8" />
-                        <span className="font-semibold">⭐ Featured Campaign:</span>
+                        <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 shrink-0 animate-pulse ml-8" />
+                        <span className="font-semibold">⭐ Featured:</span>
                         <span className="font-bold">{currentCampaign.title}</span>
-                        <span className="opacity-90">•</span>
-                        <span>{currentCampaign.brief_details || currentCampaign.description}</span>
+                        <span className="opacity-90 hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">{currentCampaign.brief_details || currentCampaign.description}</span>
                         <span className="opacity-90">•</span>
                         <span className="font-semibold">
-                            ${currentCampaign.current_amount.toLocaleString()} raised of ${currentCampaign.goal_amount.toLocaleString()} ({Math.round(progress)}%)
+                            ${currentCampaign.current_amount.toLocaleString()} <span className="hidden sm:inline">raised of ${currentCampaign.goal_amount.toLocaleString()}</span> ({Math.round(progress)}%)
                         </span>
-                        <Sparkles className="h-4 w-4 shrink-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                        <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 shrink-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
                     </div>
                 </div>
             </div>

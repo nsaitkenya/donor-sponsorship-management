@@ -613,8 +613,8 @@ INSERT INTO public.campaigns (
 ) VALUES 
 (
   'Living the Charge - Paris Marathon 2027',
-  'An initiative to expand access to volunteering opportunities for academically promising yet underserved high school students across Kenya. We are raising $100,000 to seed a permanent endowment whose investment returns will sustainably finance structured volunteer placements through the Voluntary Service Scheme (VSS), giving students access and exposure to professional opportunities.',
-  'Raising $100,000 to fund the Voluntary Service Scheme (VSS) - providing 250-350 students per year with professional volunteer placements. Three alumni will run the Paris Marathon 2027 to rally support for this transformative endowment.',
+  'Living the Charge is an initiative to expand access to volunteering opportunities for academically promising yet underserved high school students across Kenya. We are raising $100,000 to seed a permanent endowment whose investment returns will sustainably finance structured volunteer placements through the Voluntary Service Scheme (VSS). Founded in 1959, Starehe Boys'' Centre operates the VSS model where students undertake 2-3 week holiday job placements in corporations, hospitals, government offices, and NGOs across Kenya. The endowment will finance approximately 250-350 students per year at $45 per student, covering transport, meals, and liability insurance. Three alumni - Socrates Okong''o (Wharton), Ricky David (Georgia State), and Nathan Charllemagne - will run the Paris Marathon in April 2027 to rally support for this transformative initiative that converts philanthropy into a durable financial structure for sustained, intergenerational impact.',
+  'Raising $100,000 to fund the Voluntary Service Scheme (VSS) endowment - providing 250-350 students per year with professional volunteer placements at no cost. Three alumni will run the Paris Marathon 2027 to rally support for this transformative initiative that turns talent into opportunity.',
   100000.00,
   12500.00,
   '2025-01-01',

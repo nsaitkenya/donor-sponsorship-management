@@ -72,22 +72,22 @@ export function FeaturedCampaign({ campaign }: FeaturedCampaignProps) {
                                             <Progress value={progress} className="h-3" />
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="flex items-start gap-3 p-4 rounded-lg bg-primary/5 border border-primary/10">
-                                                <Target className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                            <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg bg-primary/5 border border-primary/10">
+                                                <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 shrink-0" />
                                                 <div>
                                                     <div className="text-xs text-muted-foreground mb-1">Goal</div>
-                                                    <div className="text-xl font-bold text-primary">
+                                                    <div className="text-base sm:text-xl font-bold text-primary">
                                                         ${campaign.goal_amount.toLocaleString()}
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-start gap-3 p-4 rounded-lg bg-accent/5 border border-accent/10">
-                                                <TrendingUp className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                                            <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg bg-accent/5 border border-accent/10">
+                                                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 shrink-0" />
                                                 <div>
                                                     <div className="text-xs text-muted-foreground mb-1">Raised</div>
-                                                    <div className="text-xl font-bold text-accent">
+                                                    <div className="text-base sm:text-xl font-bold text-accent">
                                                         ${campaign.current_amount.toLocaleString()}
                                                     </div>
                                                 </div>
@@ -95,12 +95,12 @@ export function FeaturedCampaign({ campaign }: FeaturedCampaignProps) {
                                         </div>
 
                                         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                                            <Button size="lg" asChild className="flex-1 shadow-lg">
+                                            <Button size="lg" asChild className="flex-1 shadow-lg min-h-[44px]">
                                                 <Link href="/auth/sign-up">
                                                     Donate Now
                                                 </Link>
                                             </Button>
-                                            <Button size="lg" variant="outline" asChild className="flex-1">
+                                            <Button size="lg" variant="outline" asChild className="flex-1 min-h-[44px]">
                                                 <Link href="/campaigns">
                                                     Learn More
                                                 </Link>

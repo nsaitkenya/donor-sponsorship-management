@@ -17,7 +17,7 @@ export default async function HomePage() {
     .from("campaigns")
     .select("*")
     .eq("status", "active")
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: true })
     .limit(5)
 
   const featuredCampaign = campaigns?.[0]
